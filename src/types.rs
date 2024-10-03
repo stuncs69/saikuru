@@ -8,6 +8,10 @@ pub enum Color {
 pub enum PieceType {
     Pawn,
     Rook,
+    Knight,
+    Bishop,
+    Queen,
+    King,
 }
 
 #[derive(Clone, Copy, Debug)]

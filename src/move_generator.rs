@@ -12,6 +12,10 @@ impl Board {
                         match piece.kind {
                             PieceType::Pawn => self.generate_pawn_moves(row, col, &mut moves),
                             PieceType::Rook => self.generate_rook_moves(row, col, &mut moves),
+                            PieceType::Knight => self.generate_knight_moves(row, col, &mut moves),
+                            PieceType::Bishop => self.generate_bishop_moves(row, col, &mut moves),
+                            PieceType::Queen => self.generate_queen_moves(row, col, &mut moves),
+                            PieceType::King => self.generate_king_moves(row, col, &mut moves),
                         }
                     }
                 }
@@ -62,6 +66,75 @@ impl Board {
                 moves.push((row, col, row, i));
             } else {
                 break;
+            }
+        }
+    }
+
+    fn generate_knight_moves(&self, row: usize, col: usize, moves: &mut Vec<(usize, usize, usize, usize)>) {
+        let knight_moves = [
+            (2, 1), (2, -1), (-2, 1), (-2, -1),
+            (1, 2), (1, -2), (-1, 2), (-1, -2),
+        ];
+
+        for (dx, dy) in knight_moves.iter() {
+            let new_row = row as isize + *dx;
+            let new_col = col as isize + *dy;
+            if new_row >= 0 && new_row < BOARD_SIZE as isize && new_col >= 0 && new_col < BOARD_SIZE as isize {
+                let new_row = new_row as usize;
+                let new_col = new_col as usize;
+                if self.grid[new_row][new_col].map_or(true, |p| p.color != self.grid[row][col].unwrap().color) {
+                    moves.push((row, col, new_row, new_col));
+                }
+            }
+        }
+    }
+
+    fn generate_bishop_moves(&self, row: usize, col: usize, moves: &mut Vec<(usize, usize, usize, usize)>) {
+        let directions = [(1, 1), (1, -1), (-1, 1), (-1, -1)];
+
+        for (dx, dy) in directions.iter() {
+            let mut new_row = row as isize;
+            let mut new_col = col as isize;
+
+            while let Some(piece) = self.grid.get(new_row as usize).and_then(|r| r.get(new_col as usize)) {
+                new_row += *dx;
+                new_col += *dy;
+                if new_row < BOARD_SIZE as isize && new_col < BOARD_SIZE as isize {
+                    if piece.is_none() {
+                        moves.push((row, col, new_row as usize, new_col as usize));
+                    } else {
+                        if piece.as_ref().unwrap().color != self.grid[row][col].unwrap().color {
+                            moves.push((row, col, new_row as usize, new_col as usize));
+                        }
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    fn generate_queen_moves(&self, row: usize, col: usize, moves: &mut Vec<(usize, usize, usize, usize)>) {
+        self.generate_rook_moves(row, col, moves);
+        self.generate_bishop_moves(row, col, moves);
+    }
+
+    fn generate_king_moves(&self, row: usize, col: usize, moves: &mut Vec<(usize, usize, usize, usize)>) {
+        let king_moves = [
+            (1, 0), (-1, 0), (0, 1), (0, -1),
+            (1, 1), (1, -1), (-1, 1), (-1, -1),
+        ];
+
+        for (dx, dy) in king_moves.iter() {
+            let new_row = row as isize + *dx;
+            let new_col = col as isize + *dy;
+            if new_row >= 0 && new_row < BOARD_SIZE as isize && new_col >= 0 && new_col < BOARD_SIZE as isize {
+                let new_row = new_row as usize;
+                let new_col = new_col as usize;
+                if self.grid[new_row][new_col].map_or(true, |p| p.color != self.grid[row][col].unwrap().color) {
+                    moves.push((row, col, new_row, new_col));
+                }
             }
         }
     }

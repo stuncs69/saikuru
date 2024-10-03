@@ -35,7 +35,7 @@ impl Board {
                     let kind = match &piece_str[1..] {
                         "P" => PieceType::Pawn,
                         "R" => PieceType::Rook,
-                        _ => continue, // Ignore unrecognized piece types
+                        _ => continue,
                     };
                     board[row_index][col_index] = Some(Piece { color, kind });
                 }
@@ -52,6 +52,10 @@ impl Board {
                     Some(piece) => match piece.kind {
                         PieceType::Pawn => print!("P "),
                         PieceType::Rook => print!("R "),
+                        PieceType::Knight => print!("N "),
+                        PieceType::Bishop => print!("B "),
+                        PieceType::Queen => print!("Q "),
+                        PieceType::King => print!("K "),
                     },
                     None => print!(". "),
                 }

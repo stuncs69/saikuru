@@ -10,6 +10,10 @@ impl Board {
                     let piece_value = match piece.kind {
                         PieceType::Pawn => 1,
                         PieceType::Rook => 5,
+                        PieceType::Knight => 3,
+                        PieceType::Bishop => 3,
+                        PieceType::Queen => 9,
+                        PieceType::King => 1000,
                     };
                     score += match piece.color {
                         Color::White => piece_value,
