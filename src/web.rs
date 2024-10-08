@@ -8,6 +8,7 @@ use warp::Filter;
 struct BoardRequest {
     board: [[Option<String>; BOARD_SIZE]; BOARD_SIZE],
     depth: usize,
+    player: bool,
 }
 
 #[derive(Serialize)]
@@ -24,10 +25,17 @@ pub async fn start_server() {
         .map({
             let board_state = Arc::clone(&board_state);
             move |req: BoardRequest| {
+            println!("started looking for best moves with depth {:?}", req.depth);
+
                 let mut board = board_state.lock().unwrap();
                 *board = Board::from_json(&req.board);
 
-                let (_, best_move) = board.minimax(req.depth, Color::Black, true);
+                let mut color = Color::White;
+                if !req.player {
+                    color = Color::Black;
+                }
+
+                let (_, best_move) = board.minimax(req.depth, color, true);
                 let best_move_str = best_move.map(|(from_row, from_col, to_row, to_col)| {
                     format!(
                         "{} -> {}",
@@ -35,6 +43,8 @@ pub async fn start_server() {
                         Board::index_to_chess_notation(to_row, to_col)
                     )
                 });
+
+                println!("Best move: {:?}", best_move_str);
 
                 warp::reply::json(&MoveResponse { best_move: best_move_str })
             }

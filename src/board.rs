@@ -35,6 +35,10 @@ impl Board {
                     let kind = match &piece_str[1..] {
                         "P" => PieceType::Pawn,
                         "R" => PieceType::Rook,
+                        "N" => PieceType::Knight,
+                        "B" => PieceType::Bishop,
+                        "Q" => PieceType::Queen,
+                        "K" => PieceType::King,
                         _ => continue,
                     };
                     board[row_index][col_index] = Some(Piece { color, kind });
